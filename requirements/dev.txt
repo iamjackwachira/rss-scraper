@@ -5,3 +5,4 @@
 flake8==3.7.9  # https://github.com/PyCQA/flake8
 coverage==5.0.3  # https://github.com/nedbat/coveragepy
 pre-commit==2.7.1  # https://github.com/pre-commit/pre-commit
+gunicorn==20.0.4  # https://github.com/benoitc/gunicorn

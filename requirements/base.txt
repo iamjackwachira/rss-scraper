@@ -9,5 +9,5 @@ djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
 drf-yasg==1.17.0
 psycopg2==2.8.4 # https://github.com/psycopg/psycopg2
 
-beautifulsoup4==4.9.3 # https://pypi.org/project/beautifulsoup4/
+bs4 # https://pypi.org/project/beautifulsoup4/
 lxml==4.6.1 # https://github.com/lxml/lxml

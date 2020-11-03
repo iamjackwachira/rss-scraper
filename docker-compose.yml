@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+    rss_web:
+        build: .
+        entrypoint: bash /code/docker-entrypoint.sh
+        container_name: rss_web
+        image: rss_web
+        volumes:
+            - .:/code
+            - static-content:/static
+        ports:
+            - "8080:8080"
+        depends_on:
+            - rss_postgres
+        links:
+            - rss_postgres
+        environment:
+            DATABASE_URL: "postgres://root:postgres@rss_postgres:5432/rss_db"
+            PORT: 8080
+
+    rss_postgres:
+        container_name: rss_postgres
+        image: postgres:11
+        environment:
+            POSTGRES_DB: rss_db
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - /var/lib/postgresql/data/
+        ports:
+            - "5432:5432"
+        restart: always
+
+networks:
+    default:
+        external:
+            name: local
+
+volumes:
+    postgres_data:
+    static-content:
