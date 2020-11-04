@@ -29,7 +29,7 @@ schema_view = get_schema_view(
 
 docs = [
     path('docs/', schema_view.with_ui('swagger', cache_timeout=None),
-         name='schema-swagger-ui'),
+         name='schema-swagger-ui')
 ]
 
 urlpatterns = public_apis + docs + [

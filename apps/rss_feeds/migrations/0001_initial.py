@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=500)),
                 ('pub_date', models.DateTimeField()),
                 ('is_permalink', models.BooleanField(default=False)),
-                ('feed', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='feed_items', to='feeds.feed')),
+                ('feed', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='feed_items', to='rss_feeds.feed')),
             ],
             options={
                 'verbose_name': 'Feed Item',
