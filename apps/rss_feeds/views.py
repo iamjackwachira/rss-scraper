@@ -13,5 +13,6 @@ class FeedFollowViewSet(generics.ListAPIView, viewsets.GenericViewSet):
 
     def list(self, request):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        feeds = queryset.filter(user=request.user)
+        serializer = self.get_serializer(feeds, many=True)
         return Response(serializer.data)

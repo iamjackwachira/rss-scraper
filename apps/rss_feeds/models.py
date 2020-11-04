@@ -6,7 +6,7 @@ from core.models import BaseModel
 
 class BaseFeed(BaseModel):
     title = models.CharField(max_length=200)
-    link = models.CharField(max_length=200)
+    link = models.URLField(max_length=200)
     description = models.CharField(max_length=500)
     pub_date = models.DateTimeField()
 
