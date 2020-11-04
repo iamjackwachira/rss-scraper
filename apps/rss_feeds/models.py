@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+
 from core.models import BaseModel
 
 
@@ -46,13 +47,14 @@ class FeedFollow(BaseModel):
     """ Feeds a user follows """
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='feed_follow')
+        User, on_delete=models.CASCADE, related_name='feed_follows')
     feed = models.ForeignKey(
-        Feed, on_delete=models.CASCADE, related_name='feed_follow')
+        Feed, on_delete=models.CASCADE, related_name='feed_follows')
 
     class Meta:
         verbose_name = 'Feed Follow'
         verbose_name_plural = 'Feed Follow'
+        unique_together = ('user', 'feed')
 
     def __str__(self):
         return f'{self.user} - {self.feed}'
