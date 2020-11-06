@@ -45,7 +45,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["rest_framework", "drf_yasg"]
+THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "django_filters"]
 
 LOCAL_APPS = ["core", "rss_feeds"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -137,7 +137,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 # SIMPLE_JWT

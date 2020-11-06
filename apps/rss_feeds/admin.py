@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Feed, FeedItem, FeedFollow
+from .models import Feed, FeedItem
 
 
 class FeedAdmin(admin.ModelAdmin):
@@ -13,11 +13,5 @@ class FeedItemAdmin(admin.ModelAdmin):
     display = "Feed Item"
 
 
-class FeedFollowAdmin(admin.ModelAdmin):
-    list_display = ("feed", "user", "created_on")
-    display = "Feed Follow"
-
-
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(FeedItem, FeedItemAdmin)
-admin.site.register(FeedFollow, FeedFollowAdmin)

@@ -8,6 +8,7 @@ djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
 djangorestframework-simplejwt==4.4.0 # https://github.com/SimpleJWT/django-rest-framework-simplejwt
 drf-nested-routers==0.92.1 # https://github.com/alanjds/drf-nested-routers
 drf-yasg==1.17.0
+django-filter==2.4.0 # https://github.com/carltongibson/django-filter
 
 psycopg2==2.8.4 # https://github.com/psycopg/psycopg2
 bs4 # https://pypi.org/project/beautifulsoup4/

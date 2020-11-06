@@ -1,53 +1,44 @@
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
+from .models import FeedItem, Feed
+from .permissions import IsFeedOwner
 from .serializers import FeedSerializer, FeedItemSerializer, FollowFeedSerializer
-from .models import FeedFollow, FeedItem
 
 
-class FeedViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = FeedFollow.objects.all()
+class FeedViewSet(viewsets.ModelViewSet):
     ordering_fields = ['created_on']
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_serializer_class(self):
-        if self.action in ['follow']:
-            return FollowFeedSerializer
-        return FeedSerializer
-
-    def list(self, request):
-        queryset = self.get_queryset()
-        feeds = queryset.filter(user=request.user)
-        serializer = self.get_serializer(feeds, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['post'])
-    def follow(self, request, pk=None, **kwargs):
-        feed = self.get_object()
-        follow, created = FeedFollow.objects.get_or_create(
-            feed__id=feed.feed_id, user__id=feed.user_id)
-        serializer = self.get_serializer(follow)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['delete'])
-    def unfollow(self, request, pk=None, **kwargs):
-        feed = self.get_object()
-        feed_follow = FeedFollow.objects.get(
-            feed__id=feed.feed_id, user__id=feed.user_id)
-        feed_follow.delete()
-        serializer = self.get_serializer(feed_follow)
-        return Response(serializer.data)
-
-
-class FeedItemViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = FeedItemSerializer
+    permission_classes = [IsFeedOwner & permissions.IsAuthenticated]
+    serializer_class = FeedSerializer
 
     def get_queryset(self):
-        return FeedItem.objects.filter(feed_id=self.kwargs['feed_pk'])
+        return Feed.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = FollowFeedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Logic for fetching rss feed ..
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class FeedItemViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsFeedOwner & permissions.IsAuthenticated]
+    serializer_class = FeedItemSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['read']
+
+    def get_queryset(self):
+        if 'feed_pk' in self.kwargs:
+            return FeedItem.objects.filter(feed_id=self.kwargs['feed_pk'], feed__user=self.request.user)
+        return FeedItem.objects.filter(feed__user=self.request.user)
+
+    @action(detail=True, methods=['patch'])
+    def mark_read(self, request, pk=None, **kwargs):
+        feed_item = self.get_object()
+        feed_item.read = True
+        feed_item.save()
+        serializer = self.get_serializer(feed_item)
+        return Response(serializer.data)
