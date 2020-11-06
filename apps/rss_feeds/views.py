@@ -1,3 +1,5 @@
+import feedparser
+
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,8 +21,27 @@ class FeedViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = FollowFeedSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # Logic for fetching rss feed ..
-        headers = self.get_success_headers(serializer.data)
+        rss_feed = feedparser.parse(serializer.validated_data['url'])
+        if rss_feed.bozo:
+            bozo_exception = rss_feed.bozo_exception.getMessage()
+            return Response({"message": f"RSS feed could not be processed: {bozo_exception}"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        feed = Feed.objects.create(
+            title=rss_feed.feed.title,
+            link=rss_feed.feed.link,
+            description=rss_feed.feed.description,
+            language=rss_feed.feed.language,
+            user=request.user
+        )
+        for entry in rss_feed.entries:
+            FeedItem.objects.create(
+                title=entry.title,
+                link=entry.link,
+                description=entry.description,
+                feed=feed
+            )
+        headers = self.get_success_headers(feed)
+        serializer = self.get_serializer(feed)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 

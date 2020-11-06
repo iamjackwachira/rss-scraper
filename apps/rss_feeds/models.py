@@ -7,8 +7,7 @@ from core.models import BaseModel
 class BaseFeed(BaseModel):
     title = models.CharField(max_length=200)
     link = models.URLField(max_length=200)
-    description = models.CharField(max_length=500)
-    pub_date = models.DateTimeField()
+    description = models.TextField()
 
     class Meta:
         abstract = True
@@ -33,7 +32,6 @@ class FeedItem(BaseFeed):
 
     feed = models.ForeignKey(
         Feed, on_delete=models.CASCADE, related_name='feed_items')
-    is_permalink = models.BooleanField(default=False)
     read = models.BooleanField(default=False)
 
     class Meta:

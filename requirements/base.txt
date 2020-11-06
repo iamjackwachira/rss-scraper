@@ -11,5 +11,4 @@ drf-yasg==1.17.0
 django-filter==2.4.0 # https://github.com/carltongibson/django-filter
 
 psycopg2==2.8.4 # https://github.com/psycopg/psycopg2
-bs4 # https://pypi.org/project/beautifulsoup4/
-lxml==4.6.1 # https://github.com/lxml/lxml
+feedparser==6.0.2 # https://github.com/kurtmckee/feedparser
