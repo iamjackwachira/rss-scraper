@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from core.models import BaseModel
+from apps.core.models import BaseModel
 
 
 class BaseFeed(BaseModel):

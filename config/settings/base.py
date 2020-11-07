@@ -47,7 +47,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "django_filters"]
 
-LOCAL_APPS = ["core", "rss_feeds"]
+LOCAL_APPS = ["apps.core", "apps.rss_feeds"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -147,3 +147,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# RabbitMQ
+RABBIT_USER = env('RABBIT_USER', default="rabbitmq")
+RABBIT_PASS = env('RABBIT_PASS', default="rabbitmq")
+RABBIT_HOST = env('RABBIT_HOST', default="rabbit_host")
+RABBIT_PORT = env('RABBIT_PORT', default="5672")
+RABBIT_VHOST = env('RABBIT_VHOST', default="celery_vhost")

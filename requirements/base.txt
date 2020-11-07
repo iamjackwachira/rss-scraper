@@ -12,3 +12,4 @@ django-filter==2.4.0 # https://github.com/carltongibson/django-filter
 
 psycopg2==2.8.4 # https://github.com/psycopg/psycopg2
 feedparser==6.0.2 # https://github.com/kurtmckee/feedparser
+celery==5.0.2 # https://github.com/celery/celery
