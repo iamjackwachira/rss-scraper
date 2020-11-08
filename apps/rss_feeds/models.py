@@ -21,6 +21,7 @@ class Feed(BaseFeed):
     language = models.CharField(max_length=50)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='feeds')
+    update_success = models.BooleanField(default=True)
 
     class Meta:
         ordering = ('modified_on',)
