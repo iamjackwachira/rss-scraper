@@ -24,7 +24,7 @@ class FeedViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         feed_url = serializer.validated_data['url']
         rss_feed = feedparser.parse(feed_url)
-        if rss_feed.bozo:
+        if rss_feed.bozo:  # bozo: bit set when a feed is not well-formed
             bozo_exception = rss_feed.bozo_exception.getMessage()
             return Response({"message": f"RSS feed could not be processed: {bozo_exception}"},
                             status=status.HTTP_400_BAD_REQUEST)

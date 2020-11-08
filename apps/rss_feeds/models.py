@@ -35,11 +35,19 @@ class Feed(BaseModel):
         return f'{self.title}'
 
     def update_feed_items(self, force=False):
+        """
+        Peforms updating/creating of a feed's items
+
+        :param force: flag determining if all feeds
+                      should be fetched or only new ones.
+
+        :return: Feed instance
+        """
         if force:
             rss_feed = feedparser.parse(self.link)
         else:
             rss_feed = feedparser.parse(self.link, modified=self.rss_server_last_updated)
-        if rss_feed.bozo:
+        if rss_feed.bozo:  # bozo: bit set when a feed is not well-formed
             bozo_exception = rss_feed.bozo_exception.getMessage()
             raise RssFeedUpdateError(bozo_exception)
         if status.is_success(rss_feed.status):

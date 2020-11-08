@@ -12,6 +12,12 @@ logger = logging.getLogger(__name__)
 
 @app.task(bind=True, default_retry_delay=settings.RABBIT_RETRY_DELAY, max_retries=settings.RABBIT_MAX_RETRIES)
 def update_rss_feeds(self, *args, **kwargs):
+    """
+    Celery periodic task.
+
+    Updates feed items with a certain retry delay
+    and maximum number of retries allowed for a failed update.
+    """
     feeds = Feed.objects.all()
     for feed in feeds:
         try:
