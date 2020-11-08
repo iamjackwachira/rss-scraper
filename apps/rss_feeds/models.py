@@ -1,7 +1,11 @@
+import feedparser
+
 from django.contrib.auth.models import User
 from django.db import models
 
+from rest_framework import status
 from apps.core.models import BaseModel
+from .exceptions import RssFeedUpdateError
 
 
 class BaseFeed(BaseModel):
@@ -24,10 +28,41 @@ class Feed(BaseFeed):
     update_success = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ('modified_on',)
+        ordering = ('-modified_on',)
 
     def __str__(self):
         return f'{self.title}'
+
+    def update_feed_items(self, force=False):
+        if force:
+            rss_feed = feedparser.parse(self.link)
+        else:
+            rss_feed = feedparser.parse(self.link, modified=self.rss_server_last_updated)
+        if rss_feed.bozo:
+            bozo_exception = rss_feed.bozo_exception.getMessage()
+            raise RssFeedUpdateError(bozo_exception)
+        if status.is_success(rss_feed.status):
+            self.rss_server_last_updated = rss_feed.updated
+            self.save()
+            for entry in rss_feed.entries:
+                try:
+                    feed_item = FeedItem.objects.get(
+                        item_id=entry.id,
+                        feed=self)
+                    if feed_item.rss_server_last_updated != entry.updated:
+                        feed_item.rss_server_last_updated = entry.updated
+                        feed_item.title = entry.title
+                        feed_item.description = entry.description
+                        feed_item.save()
+                except FeedItem.DoesNotExist:
+                    FeedItem.objects.create(
+                        item_id=entry.id,
+                        feed=self,
+                        rss_server_last_updated=entry.updated,
+                        title=entry.title,
+                        description=entry.description
+                    )
+        return self
 
 
 class FeedItem(BaseFeed):
@@ -41,7 +76,7 @@ class FeedItem(BaseFeed):
     class Meta:
         verbose_name = 'Feed Item'
         verbose_name_plural = 'Feed Items'
-        ordering = ('modified_on',)
+        ordering = ('-modified_on',)
         unique_together = ('feed', 'item_id')
 
     def __str__(self):

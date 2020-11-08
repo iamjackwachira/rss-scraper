@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
+from .exceptions import RssFeedUpdateError
 from .models import FeedItem, Feed
 from .permissions import IsFeedOwner
 from .serializers import FeedSerializer, FeedItemSerializer, FollowFeedSerializer
@@ -47,6 +48,19 @@ class FeedViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(feed)
         serializer = self.get_serializer(feed)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(detail=True, methods=['post'])
+    def force_feed_update(self, request, pk=None, **kwargs):
+        feed = self.get_object()
+        try:
+            feed.update_feed_items(force=True)
+        except RssFeedUpdateError as e:
+            feed.update_success = False
+            feed.save()
+            return Response({"message": f"RSS feeds could not be updated: {e}"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": f"RSS feeds updated successfully"},
+                        status=status.HTTP_200_OK)
 
 
 class FeedItemViewSet(viewsets.ModelViewSet):
