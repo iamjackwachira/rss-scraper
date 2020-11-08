@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from unittest.mock import patch
 
-from factories.models import FeedFactory, UserFactory
+from factories.models import FeedFactory, FeedItemFactory, UserFactory
 from apps.rss_feeds.models import FeedItem
 
 
@@ -78,3 +78,52 @@ class TestFeeds(APITestCase):
         feed_items = FeedItem.objects.all()
         assert len(feed_items) == 1
         assert feed_items[0].title == 'Entry1'
+
+
+@pytest.mark.django_db
+class TestFeedItems(APITestCase):
+    def setUp(self):
+        user = UserFactory.create()
+        self.feed = FeedFactory.create(user=user)
+        self.feed_items = FeedItemFactory.create_batch(3, feed=self.feed)
+        self.client.force_authenticate(user=user)
+
+    def test_get_one_item(self):
+        url = reverse('rss_feeds:feed-items-detail', kwargs={'pk': self.feed_items[0].pk})
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data.get('title') == self.feed_items[0].title
+
+    def test_get_feed_items(self):
+        url = reverse('rss_feeds:feed-items-list')
+        response = self.client.get(url)
+        json_data = json.loads(json.dumps(response.data))
+        assert response.status_code == status.HTTP_200_OK
+        assert len(json_data) == 3
+
+    def test_get_feed_items_from_feed(self):
+        url = reverse('rss_feeds:items-list', kwargs={'feed_pk': self.feed.pk})
+        response = self.client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 3
+
+    def test_mark_item_read(self):
+        url = reverse('rss_feeds:items-mark-read', kwargs={'feed_pk': self.feed.pk, 'pk': self.feed_items[0].pk})
+        response = self.client.patch(url, data={})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data.get('read') is True
+
+    def test_filter_items(self):
+        url = reverse('rss_feeds:items-list', kwargs={'feed_pk': self.feed.pk})
+        response = self.client.get(f'{url}?read=True')
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 0
+
+        # Mark item as read
+        url = reverse('rss_feeds:items-mark-read', kwargs={'feed_pk': self.feed.pk, 'pk': self.feed_items[0].pk})
+        response = self.client.patch(url, data={})
+
+        url = reverse('rss_feeds:items-list', kwargs={'feed_pk': self.feed.pk})
+        response = self.client.get(f'{url}?read=True')
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1

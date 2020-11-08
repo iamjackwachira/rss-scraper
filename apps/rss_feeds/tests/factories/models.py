@@ -1,7 +1,7 @@
 import factory
 
 from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, FeedItem
 
 
 class UserFactory(factory.DjangoModelFactory):
@@ -29,3 +29,12 @@ class FeedFactory(BaseModelFactory):
 
     class Meta:
         model = Feed
+
+
+class FeedItemFactory(BaseModelFactory):
+    feed = factory.SubFactory(FeedFactory)
+    read = False
+    item_id = factory.Sequence(lambda n: 'item-%s' % n)
+
+    class Meta:
+        model = FeedItem
