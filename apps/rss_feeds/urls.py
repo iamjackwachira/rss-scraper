@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 from rest_framework_nested import routers
 
@@ -14,6 +14,6 @@ details_router = routers.NestedSimpleRouter(router, r'feeds', lookup='feed')
 details_router.register(r'items', views.FeedItemViewSet, 'items')
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^', include(details_router.urls)),
+    path('', include(router.urls)),
+    path('', include(details_router.urls)),
 ]
