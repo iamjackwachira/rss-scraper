@@ -16,6 +16,6 @@ RUN pip install --upgrade pip && pip install -r requirements/dev.txt --no-cache-
 
 COPY . /code
 
-EXPOSE 8080
+EXPOSE 8000
 
 ENTRYPOINT ["bash", "/code/docker-entrypoint.sh"]

@@ -21,20 +21,24 @@ class FeedViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = FollowFeedSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        rss_feed = feedparser.parse(serializer.validated_data['url'])
+        feed_url = serializer.validated_data['url']
+        rss_feed = feedparser.parse(feed_url)
         if rss_feed.bozo:
             bozo_exception = rss_feed.bozo_exception.getMessage()
             return Response({"message": f"RSS feed could not be processed: {bozo_exception}"},
                             status=status.HTTP_400_BAD_REQUEST)
         feed = Feed.objects.create(
             title=rss_feed.feed.title,
-            link=rss_feed.feed.link,
+            link=feed_url,
             description=rss_feed.feed.description,
             language=rss_feed.feed.language,
-            user=request.user
+            user=request.user,
+            rss_server_last_updated=rss_feed.modified
         )
         for entry in rss_feed.entries:
             FeedItem.objects.create(
+                item_id=entry.id,
+                rss_server_last_updated=entry.updated,
                 title=entry.title,
                 link=entry.link,
                 description=entry.description,

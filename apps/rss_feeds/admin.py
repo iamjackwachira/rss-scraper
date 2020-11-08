@@ -4,12 +4,12 @@ from .models import Feed, FeedItem
 
 
 class FeedAdmin(admin.ModelAdmin):
-    list_display = ("title", "language")
+    list_display = ("title", "language", "rss_server_last_updated")
     display = "Feed"
 
 
 class FeedItemAdmin(admin.ModelAdmin):
-    list_display = ("feed", "title")
+    list_display = ("feed", "title", "created_on", "modified_on")
     display = "Feed Item"
 
 

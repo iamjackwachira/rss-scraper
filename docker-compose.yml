@@ -10,7 +10,7 @@ services:
             - .:/code
             - static-content:/static
         ports:
-            - "8080:8080"
+            - "8000:8080"
         depends_on:
             - rss_postgres
             - rss_rabbitmq
@@ -18,7 +18,7 @@ services:
             - rss_postgres
         environment:
             DATABASE_URL: "postgres://root:postgres@rss_postgres:5432/rss_db"
-            PORT: 8080
+            PORT: 8000
 
     rss_postgres:
         container_name: rss_postgres
