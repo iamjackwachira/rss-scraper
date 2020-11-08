@@ -47,7 +47,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "django_filters"]
 
-LOCAL_APPS = ["apps.core", "apps.rss_feeds"]
+LOCAL_APPS = ["apps.rss_feeds"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

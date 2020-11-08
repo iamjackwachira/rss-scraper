@@ -4,11 +4,12 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from rest_framework import status
-from apps.core.models import BaseModel
 from .exceptions import RssFeedUpdateError
 
 
-class BaseFeed(BaseModel):
+class BaseModel(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True, editable=False)
+    modified_on = models.DateTimeField(auto_now=True, editable=False)
     title = models.CharField(max_length=200)
     link = models.URLField(max_length=200)
     description = models.TextField()
@@ -19,7 +20,7 @@ class BaseFeed(BaseModel):
         abstract = True
 
 
-class Feed(BaseFeed):
+class Feed(BaseModel):
     """ RSS Feeds """
 
     language = models.CharField(max_length=50)
@@ -65,7 +66,7 @@ class Feed(BaseFeed):
         return self
 
 
-class FeedItem(BaseFeed):
+class FeedItem(BaseModel):
     """ Feed Items contained in a Feed """
 
     feed = models.ForeignKey(
