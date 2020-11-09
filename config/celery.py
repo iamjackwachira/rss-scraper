@@ -25,9 +25,9 @@ app.autodiscover_tasks(packages=['apps.rss_feeds'])
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    # executes every 1 minute
-    'scraping-task-one-min': {
+    # executes every 15 minutes
+    'scraping-task': {
         'task': 'apps.rss_feeds.tasks.update_rss_feeds',
-        'schedule': crontab(),
-    }
+        'schedule': crontab(minute='*/15')
+    },
 }
