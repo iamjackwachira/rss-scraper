@@ -63,11 +63,6 @@ services:
             - rss_postgres
             - rss_rabbitmq
 
-networks:
-    default:
-        external:
-            name: local
-
 volumes:
     postgres_data:
     static-content:
